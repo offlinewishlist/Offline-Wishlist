@@ -3,11 +3,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.ksp)
-
-//    kotlin("plugin.serialization") version "2.1.10"
-//    id("com.google.devtools.ksp") version "2.3.4"
+    id("com.google.devtools.ksp") version "2.0.20-1.0.25"
 }
+
 
 android {
     namespace = "com.example.calmlist"
@@ -70,17 +68,20 @@ dependencies {
 
     implementation("androidx.room:room-runtime:$room_version")
 
-    // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
-    // See Add the KSP plugin to your project
+
     ksp("androidx.room:room-compiler:$room_version")
     implementation("com.google.dagger:dagger-compiler:2.51.1")
     ksp("com.google.dagger:dagger-compiler:2.51.1")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-    implementation(platform("io.github.jan-tennert.supabase:bom:VERSION"))
+
+    implementation(platform("io.github.jan-tennert.supabase:bom:2.6.1"))
+    implementation("io.github.jan-tennert.supabase:gotrue-kt")
+    implementation("io.github.jan-tennert.supabase:compose-auth")
+    implementation("io.github.jan-tennert.supabase:compose-auth-ui")
+    implementation("io.github.jan-tennert.supabase:storage-kt")
+    implementation("io.ktor:ktor-client-cio:2.3.12")
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
-    implementation("io.github.jan-tennert.supabase:auth-kt")
-    implementation("io.github.jan-tennert.supabase:realtime-kt")
 
 
 }
