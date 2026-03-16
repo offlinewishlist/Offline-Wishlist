@@ -11,7 +11,7 @@ import kotlinx.serialization.json.Json
 object SupabaseClient {
 
     private const val SUPABASE_URL = "https://rdbadfcazapunynatrdb.supabase.co"
-    private const val SUPABASE_KEY = ""
+    private const val SUPABASE_KEY = "sb_publishable_OEk-AzZ0J2pHdIudys4mZw_UsBeYx5j"
 
     val client = createSupabaseClient(
         supabaseUrl = SUPABASE_URL,
