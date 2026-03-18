@@ -6,11 +6,13 @@ import com.example.calmlist.data.remote.SupabaseWishService
 import com.example.calmlist.model.ResultState
 import com.example.calmlist.model.Wish
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+
 class WishRepository(
     private val dao: WishDao,
-    private val remote: SupabaseWishService
+    private val remote: SupabaseWishService,
 ) {
 
     fun syncFromCloud(userId: String): Flow<ResultState<Unit>> = flow {
@@ -39,23 +41,29 @@ class WishRepository(
         }
     }
 
-    fun getLocalWishes(userId: String): Flow<List<Wish>> {
-        return dao.getWishesByUser(userId).map { list ->
-            list.map {
-                Wish(
-                    id = it.id,
-                    title = it.title,
-                    note = it.note,
-                    imagePath = it.imagePath,
-                    audioPath = it.audioPath,
-                    timestamp = it.timestamp,
-                    userId = it.userId
-                )
+    fun getLocalWishes(userId: String): Flow<ResultState<List<Wish>>> {
+        return dao.getWishesByUser(userId)
+            .map { list ->
+                val wishes = list.map {
+                    Wish(
+                        id = it.id,
+                        title = it.title,
+                        note = it.note,
+                        imagePath = it.imagePath,
+                        audioPath = it.audioPath,
+                        timestamp = it.timestamp,
+                        userId = it.userId
+                    )
+                }
+                ResultState.Succes(wishes)
             }
-        }
+
     }
 
-    suspend fun saveWishOffline(wish: Wish) {
+
+    fun saveWishOffline(wish: Wish): Flow<ResultState<Unit>> = flow {
+        emit(ResultState.Loading)
+
         dao.insertWish(
             WishEntity(
                 id = wish.id,
@@ -67,11 +75,18 @@ class WishRepository(
                 userId = wish.userId
             )
         )
+
+        emit(ResultState.Succes(Unit))
+        pushWishOnline(wish)
+    }.catch { e ->
+        emit(ResultState.error(e.message ?: "Failed to save wish"))
     }
 
     suspend fun pushWishOnline(wish: Wish) {
         remote.uploadWish(wish)
-    }fun editWish(wish: Wish): Flow<ResultState<Unit>> = flow {
+    }
+
+    fun editWish(wish: Wish): Flow<ResultState<Unit>> = flow {
         emit(ResultState.Loading)
 
         try {

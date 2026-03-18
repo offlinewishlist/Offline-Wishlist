@@ -38,6 +38,20 @@ class AuthRepository {
             emit(ResultState.error(e.message ?: "Login failed"))
         }
     }
+    fun getUserid():Flow<ResultState<String>> = flow {
+        emit(ResultState.Loading)
+        try {
+            val userId = auth.currentUserOrNull()?.id
+                ?: throw Exception("User session not created")
+            emit(ResultState.Succes(userId))
+
+        }
+        catch (e: Exception){
+            emit(ResultState.error(e.message ?: "Login failed"))
+        }
+
+
+    }
 
     fun createUser(userData: UserData): Flow<ResultState<String>> = flow {
         emit(ResultState.Loading)

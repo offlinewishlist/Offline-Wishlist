@@ -16,9 +16,11 @@ import com.example.calmlist.presentation.Screens.SettingsScreen
 import com.example.calmlist.presentation.Screens.SignUpScreen
 import com.example.calmlist.presentation.Screens.SplashScreen
 import com.example.calmlist.presentation.ViewModel.AppViewModel
+import com.example.calmlist.presentation.ViewModel.SyncViewModel
+import com.example.calmlist.presentation.ViewModel.WishDetailViewModel
 
 @Composable
-fun App(navController: NavHostController, viewModel: AppViewModel, paddingValues: PaddingValues){
+fun App(navController: NavHostController, viewModel: AppViewModel,syncViewModel: SyncViewModel,wishDetailViewModel: WishDetailViewModel, paddingValues: PaddingValues){
     android.util.Log.d("DEBUG_APP", "App composable rendered")
     Box(modifier = Modifier.fillMaxSize()) {
         NavHost(navController = navController, startDestination = Routes.LogINScreen) {
@@ -26,7 +28,7 @@ fun App(navController: NavHostController, viewModel: AppViewModel, paddingValues
                 SplashScreen(navController)
             }
             composable<Routes.HomeScreen> {
-                HomeScreen(navController)
+                HomeScreen(navController = navController, wishViewModel = wishDetailViewModel, syncViewModel = syncViewModel)
             }
             composable<Routes.SettingsScreen> {
                 SettingsScreen(navController)

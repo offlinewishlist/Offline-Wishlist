@@ -43,7 +43,7 @@ fun LogInScreen(
             .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
-        android.util.Log.d("DEBUG_APP", "LogInScreen rendered with state: ${state}")
+
         when {
             state.isLoading -> {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {

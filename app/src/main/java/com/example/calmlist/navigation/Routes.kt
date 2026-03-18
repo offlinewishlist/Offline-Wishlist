@@ -10,6 +10,8 @@ object SplashScreen: Routes()
     @Serializable
     object WishListScreen: Routes()
     @Serializable
+    object AddWishScreen: Routes()
+    @Serializable
     object LogINScreen: Routes()
     @Serializable
     object SignUPScreen: Routes()
