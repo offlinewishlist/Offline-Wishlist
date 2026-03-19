@@ -12,4 +12,5 @@ class CreateUserUseCase(
     fun createUser(userData: UserData): Flow<ResultState<String>> {
         return repository.createUser(userData)
     }
+
 }

@@ -11,4 +11,9 @@ class LoginUserUseCase(
     fun loginUser(userData: UserData): Flow<ResultState<String>> {
         return repository.loginUser(userData)
     }
+
+    fun checkUserSession(): Flow<ResultState<String?>> {
+        return repository.getUserid()
+    }
+
 }

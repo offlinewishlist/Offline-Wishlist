@@ -41,9 +41,10 @@ fun HomeScreen(
 
     // 🔄 Trigger sync + local load when screen opens
     LaunchedEffect(Unit) {
+
         syncViewModel.sync(userId)
         wishViewModel.getAllWishes(userId)
-        userId=
+
     }
 
     Box(

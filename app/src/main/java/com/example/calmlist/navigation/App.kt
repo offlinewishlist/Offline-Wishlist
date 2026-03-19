@@ -20,15 +20,16 @@ import com.example.calmlist.presentation.ViewModel.SyncViewModel
 import com.example.calmlist.presentation.ViewModel.WishDetailViewModel
 
 @Composable
-fun App(navController: NavHostController, viewModel: AppViewModel,syncViewModel: SyncViewModel,wishDetailViewModel: WishDetailViewModel, paddingValues: PaddingValues){
+fun App(navController: NavHostController, viewModel: AppViewModel, paddingValues: PaddingValues,syncViewModel: SyncViewModel,wishDetailViewModel: WishDetailViewModel){
     android.util.Log.d("DEBUG_APP", "App composable rendered")
     Box(modifier = Modifier.fillMaxSize()) {
-        NavHost(navController = navController, startDestination = Routes.LogINScreen) {
+        NavHost(navController = navController, startDestination = Routes.SplashScreen) {
             composable<Routes.SplashScreen> {
-                SplashScreen(navController)
+                SplashScreen(navController, viewModel)
             }
             composable<Routes.HomeScreen> {
-                HomeScreen(navController = navController, wishViewModel = wishDetailViewModel, syncViewModel = syncViewModel)
+
+                HomeScreen(navController,syncViewModel,wishDetailViewModel,viewModel)
             }
             composable<Routes.SettingsScreen> {
                 SettingsScreen(navController)

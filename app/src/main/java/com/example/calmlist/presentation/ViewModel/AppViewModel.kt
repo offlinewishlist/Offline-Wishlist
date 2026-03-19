@@ -16,6 +16,50 @@ class AppViewModel(val loginUseCase: LoginUserUseCase, val createUserUseCase: Cr
     private val _signupScreenstate = mutableStateOf(SignUpScreenSate())
     val signupScreenstate = _signupScreenstate
 
+    val userId = mutableStateOf<String?>(null)
+
+    fun storeUserId(id: String) {
+        userId.value = id
+    }
+
+
+
+    fun checkSession() {
+        viewModelScope.launch {
+            loginUseCase.checkUserSession().collect { result ->
+                when (result) {
+                    ResultState.Loading -> {
+                        _logInScreenstate.value = LogINScreenSate(isLoading = true)
+                    }
+
+                    is ResultState.Succes -> {
+                        if (result.data != null) {
+                            storeUserId(result.data)
+
+                            _logInScreenstate.value = LogINScreenSate(
+                                success = true,
+                                userdata = result.data
+                            )
+                        } else {
+
+                            _logInScreenstate.value = LogINScreenSate(
+                                success = false,
+                                error = null
+                            )
+                        }
+                    }
+
+                    is ResultState.error -> {
+                        _logInScreenstate.value = LogINScreenSate(
+                            error = result.message
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+
 
     fun LoginUser(userdata: UserData) {
         viewModelScope.launch {
@@ -39,6 +83,7 @@ class AppViewModel(val loginUseCase: LoginUserUseCase, val createUserUseCase: Cr
             }
         }
     }
+
     fun createUser(userdata: UserData) {
         viewModelScope.launch {
             createUserUseCase.createUser(userdata).collect { result ->

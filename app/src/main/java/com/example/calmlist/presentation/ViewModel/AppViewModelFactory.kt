@@ -15,6 +15,14 @@ class AppViewModelFactory(
                 loginUseCase = container.logInUser,
                 createUserUseCase = container.createUserUseCase
             ) as T
+        } else if (modelClass.isAssignableFrom(SyncViewModel::class.java)) {
+            return SyncViewModel(
+                repository = container.wishRepository
+            ) as T
+        } else if (modelClass.isAssignableFrom(WishDetailViewModel::class.java)) {
+            return WishDetailViewModel(
+                repository = container.wishRepository
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
