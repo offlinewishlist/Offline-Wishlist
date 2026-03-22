@@ -25,6 +25,7 @@ import com.example.calmlist.R
 import com.example.calmlist.model.ResultState
 import com.example.calmlist.model.Wish
 import com.example.calmlist.navigation.Routes
+import com.example.calmlist.presentation.ViewModel.AppViewModel
 import com.example.calmlist.presentation.ViewModel.SyncViewModel
 import com.example.calmlist.presentation.ViewModel.WishDetailViewModel
 
@@ -33,13 +34,15 @@ fun HomeScreen(
     navController: NavController,
     syncViewModel: SyncViewModel,
     wishViewModel: WishDetailViewModel,
-    userId: String
+    viewModel: AppViewModel
 ) {
     val homeState = wishViewModel.HomeScreensate.value
     val syncState by syncViewModel.syncState.collectAsState()
+    val userId = viewModel.userId.value ?: ""
 
 
-    // 🔄 Trigger sync + local load when screen opens
+
+
     LaunchedEffect(Unit) {
 
         syncViewModel.sync(userId)
@@ -92,7 +95,7 @@ fun HomeScreen(
             }
         }
 
-        // ➕ FLOATING BUTTON
+
         FloatingActionButton(
             onClick = {
                 navController.navigate(Routes.AddWishScreen)
@@ -110,17 +113,16 @@ fun HomeScreen(
             )
         }
 
-        // ☁ SYNC LOADING OVERLAY
+
         if (syncState is ResultState.Loading) {
             LoadingOverlay("Syncing your wishes...")
         }
 
-        // 🏠 HOME LOADING OVERLAY
         if (homeState.isLoading) {
             LoadingOverlay("Loading wishes...")
         }
 
-        // ❌ ERROR MESSAGE
+
         if (!homeState.error.isNullOrEmpty()) {
             ErrorBanner(homeState.error!!)
         }

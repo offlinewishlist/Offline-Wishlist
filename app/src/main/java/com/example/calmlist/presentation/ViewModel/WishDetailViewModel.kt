@@ -16,6 +16,53 @@ class WishDetailViewModel(
     private val _HomeScreenstate = mutableStateOf(HomeScreenSate())
     val HomeScreensate = _HomeScreenstate
 var userId: String?=null
+    private val _addWishState = mutableStateOf(AddWishState())
+    val addWishState = _addWishState
+
+    fun updateTitle(value: String) {
+        _addWishState.value = _addWishState.value.copy(title = value, error = null)
+    }
+
+    fun updateNote(value: String) {
+        _addWishState.value = _addWishState.value.copy(note = value, error = null)
+    }
+
+    fun updateImage(path: String) {
+        _addWishState.value = _addWishState.value.copy(imagePath = path, error = null)
+    }
+
+    fun updateAudio(path: String) {
+        _addWishState.value = _addWishState.value.copy(audioPath = path, error = null)
+    }
+
+    fun submitWish(userId: String) {
+        val state = _addWishState.value
+
+        if (state.title.isBlank() &&
+            state.imagePath.isNullOrBlank() &&
+            state.audioPath.isNullOrBlank()
+        ) {
+            _addWishState.value = state.copy(
+                error = "Add a title, image, or voice note before saving"
+            )
+            return
+        }
+
+        val wish = Wish(
+            id = "",
+            title = state.title.ifBlank { null },
+            note = state.note.ifBlank { null },
+            imagePath = state.imagePath,
+            audioPath = state.audioPath,
+            timestamp = System.currentTimeMillis(),
+            userId = userId
+        )
+
+        saveWish(wish)
+
+        // Reset UI state
+        _addWishState.value = AddWishState()
+    }
 
     fun editWish(wish: Wish) {
         viewModelScope.launch {
@@ -35,11 +82,7 @@ var userId: String?=null
             }
         }
     }
-//    fun getuserid(){
-//        viewModelScope.launch {
-//            repository.collect { result ->
-//        }
-//    }
+
 
     fun deleteWish(wishId: String) {
         viewModelScope.launch {
@@ -137,4 +180,12 @@ data class HomeScreenSate(
     val wishes: List<Wish> = emptyList(),
 
     val success: Boolean? = false,
+)
+data class AddWishState(
+    val title: String = "",
+    val note: String = "",
+    val imagePath: String? = null,
+    val audioPath: String? = null,
+    val isSaving: Boolean = false,
+    val error: String? = null
 )
