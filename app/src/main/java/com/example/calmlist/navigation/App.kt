@@ -10,6 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.calmlist.navigation.Routes
+import com.example.calmlist.presentation.Screens.AddWishScreen
 import com.example.calmlist.presentation.Screens.HomeScreen
 import com.example.calmlist.presentation.Screens.LogInScreen
 import com.example.calmlist.presentation.Screens.SettingsScreen
@@ -41,6 +42,9 @@ fun App(navController: NavHostController, viewModel: AppViewModel, paddingValues
             }
             composable<Routes.SignUPScreen> {
                 SignUpScreen(viewModel, navController)
+            }
+            composable<Routes.AddWishScreen> {
+                AddWishScreen(navController,viewModel,wishDetailViewModel)
             }
 
         }
