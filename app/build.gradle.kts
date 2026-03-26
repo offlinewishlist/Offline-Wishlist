@@ -82,6 +82,7 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:storage-kt")
     implementation("io.ktor:ktor-client-cio:2.3.12")
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation(libs.coil.compose)
 
 
 }

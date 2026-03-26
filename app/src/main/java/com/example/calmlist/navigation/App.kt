@@ -22,7 +22,7 @@ import com.example.calmlist.presentation.ViewModel.WishDetailViewModel
 
 @Composable
 fun App(navController: NavHostController, viewModel: AppViewModel, paddingValues: PaddingValues,syncViewModel: SyncViewModel,wishDetailViewModel: WishDetailViewModel){
-    android.util.Log.d("DEBUG_APP", "App composable rendered")
+
     Box(modifier = Modifier.fillMaxSize()) {
         NavHost(navController = navController, startDestination = Routes.SplashScreen) {
             composable<Routes.SplashScreen> {

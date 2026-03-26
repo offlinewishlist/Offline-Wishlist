@@ -31,6 +31,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.calmlist.R
 import com.example.calmlist.presentation.ViewModel.AppViewModel
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import com.example.calmlist.util.AudioRecorder
+import java.io.File
 import com.example.calmlist.presentation.ViewModel.WishDetailViewModel
 
 @Composable
@@ -92,14 +96,28 @@ fun AddWishScreen(
             Spacer(Modifier.height(20.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                MediaButton("Add Photo") {
+                MediaButton(text = "Add Photo") {
                     imagePicker.launch("image/*")
                 }
 
-                MediaButton("Record Voice") {
-                    Toast
-                        .makeText(context, "Audio recording feature connected", Toast.LENGTH_SHORT)
-                        .show()
+                val recorder = remember { AudioRecorder(context) }
+                val isRecording = remember { mutableStateOf(false) }
+
+                MediaButton(
+                    text = if (isRecording.value) "Stop Recording" else "Record Voice",
+                    isRecording = isRecording.value
+                ) {
+                    if (isRecording.value) {
+                        recorder.stop()
+                        isRecording.value = false
+                        Toast.makeText(context, "Voice note recorded", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val audioFile = File(context.filesDir, "audio_${System.currentTimeMillis()}.mp3")
+                        recorder.start(audioFile)
+                        wishViewModel.updateAudio(audioFile.absolutePath)
+                        isRecording.value = true
+                        Toast.makeText(context, "Recording...", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
 
@@ -143,12 +161,17 @@ fun AddWishScreen(
     }
 }
 @Composable
-fun MediaButton(text: String, onClick: () -> Unit) {
+@Composable
+fun MediaButton(
+    text: String,
+    isRecording: Boolean = false,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier.clickable { onClick() },
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(R.color.serene_primary)
+            containerColor = if (isRecording) colorResource(R.color.serene_error) else colorResource(R.color.serene_primary)
         )
     ) {
         Text(

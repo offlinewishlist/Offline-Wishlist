@@ -67,6 +67,9 @@ class AppViewModel(val loginUseCase: LoginUserUseCase, val createUserUseCase: Cr
                 when (result) {
                     ResultState.Loading -> LogINScreenSate(isLoading = true)
                     is ResultState.Succes -> {
+                        if (result.data != null) {
+                            storeUserId(result.data)
+                        }
                         _logInScreenstate.value = LogINScreenSate(
                             success = true, userdata = result.data
                         )
@@ -93,6 +96,9 @@ class AppViewModel(val loginUseCase: LoginUserUseCase, val createUserUseCase: Cr
                     }
 
                     is ResultState.Succes -> {
+                        if (result.data != null) {
+                            storeUserId(result.data)
+                        }
                         _signupScreenstate.value = SignUpScreenSate(
                             success = true, userdata = result.data
                         )

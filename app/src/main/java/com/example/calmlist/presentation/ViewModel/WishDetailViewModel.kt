@@ -8,6 +8,7 @@ import com.example.calmlist.model.ResultState
 import com.example.calmlist.model.Wish
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 
 class WishDetailViewModel(
@@ -49,7 +50,7 @@ var userId: String?=null
         }
 
         val wish = Wish(
-            id = "",
+            id = UUID.randomUUID().toString(),
             title = state.title.ifBlank { null },
             note = state.note.ifBlank { null },
             imagePath = state.imagePath,
@@ -60,7 +61,7 @@ var userId: String?=null
 
         saveWish(wish)
 
-        // Reset UI state
+
         _addWishState.value = AddWishState()
     }
 
@@ -123,6 +124,7 @@ var userId: String?=null
                 }
 
             }
+
         }
     }
 

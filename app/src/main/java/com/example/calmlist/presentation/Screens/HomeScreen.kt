@@ -1,5 +1,6 @@
 package com.example.calmlist.presentation.Screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -26,6 +27,9 @@ import com.example.calmlist.model.ResultState
 import com.example.calmlist.model.Wish
 import com.example.calmlist.navigation.Routes
 import com.example.calmlist.presentation.ViewModel.AppViewModel
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import com.example.calmlist.presentation.ViewModel.SyncViewModel
 import com.example.calmlist.presentation.ViewModel.WishDetailViewModel
 
@@ -75,8 +79,11 @@ fun HomeScreen(
                 syncState !is ResultState.Loading &&
                 !homeState.isLoading
             ) {
+                Log.d("wishes", "HomeScreen: ${wishViewModel.HomeScreensate.value}")
                 EmptyState()
             } else {
+                Log.d("wishes", "HomeScreen: ${wishViewModel.HomeScreensate.value}")
+
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(14.dp),
                     modifier = Modifier.fillMaxSize()
@@ -143,6 +150,19 @@ fun WishCard(
             .clickable { onClick() }
     ) {
         Column(modifier = Modifier.padding(18.dp)) {
+            
+            if (!wish.imagePath.isNullOrBlank()) {
+                AsyncImage(
+                    model = wish.imagePath,
+                    contentDescription = "Wish Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
             Text(
                 text = wish.title ?: "Untitled Wish",

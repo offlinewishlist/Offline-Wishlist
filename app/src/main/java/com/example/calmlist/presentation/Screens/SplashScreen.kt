@@ -1,5 +1,7 @@
 package com.example.calmlist.presentation.Screens
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,19 +36,40 @@ fun SplashScreen(
     val state = viewModel.logINScreenstate.value
 
 
-    LaunchedEffect(Unit) {
+    val permissionsToRequest = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        arrayOf(
+            android.Manifest.permission.RECORD_AUDIO,
+            android.Manifest.permission.READ_MEDIA_IMAGES,
+            android.Manifest.permission.READ_MEDIA_AUDIO
+        )
+    } else {
+        arrayOf(
+            android.Manifest.permission.RECORD_AUDIO,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()
+    ) {
         viewModel.checkSession()
+    }
+
+    LaunchedEffect(Unit) {
+        permissionLauncher.launch(permissionsToRequest)
     }
 
     LaunchedEffect(state.success, state.error) {
         when {
             state.success == true -> {
+                delay(3000)
                 navController.navigate(Routes.HomeScreen) {
                     popUpTo(Routes.SplashScreen) { inclusive = true }
                 }
             }
 
             state.success == false -> {
+                delay(3000)
                 navController.navigate(Routes.LogINScreen) {
                     popUpTo(Routes.SplashScreen) { inclusive = true }
                 }
@@ -55,7 +78,7 @@ fun SplashScreen(
     }
 
 
-    // UI
+
     Box(
         modifier = Modifier
             .fillMaxSize()
