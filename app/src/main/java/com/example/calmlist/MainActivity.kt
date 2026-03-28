@@ -7,6 +7,9 @@ import androidx.activity.compose.setContent
 // import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.calmlist.AppContainer
@@ -23,18 +26,15 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("DEBUG_APP", "MainActivity onCreate started")
+
         
         try {
 
 
             setContent {
-                Log.d("DEBUG_APP", "MainActivity setContent started")
+
                     CalmListTheme(darkTheme = false, dynamicColor = false) {
-                       androidx.compose.material3.Surface(
-                           modifier = androidx.compose.ui.Modifier.fillMaxSize(),
-                           color = androidx.compose.ui.graphics.Color.White
-                       ) {
+
                             val navController = rememberNavController()
 
 
@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
                                     paddingValues = paddingValues
                                 )
                             }
-                       }
+
                     }
             }
         } catch (e: Exception) {

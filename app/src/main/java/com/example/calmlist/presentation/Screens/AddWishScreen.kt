@@ -161,7 +161,7 @@ fun AddWishScreen(
     }
 }
 @Composable
-@Composable
+
 fun MediaButton(
     text: String,
     isRecording: Boolean = false,
