@@ -19,6 +19,29 @@ class WishDetailViewModel(
 var userId: String?=null
     private val _addWishState = mutableStateOf(AddWishState())
     val addWishState = _addWishState
+    private val _selectedWishId = mutableStateOf<String?>(null)
+    val selectedWishId = _selectedWishId
+
+    private val _selectedWish = mutableStateOf<Wish?>(null)
+    val selectedWish = _selectedWish
+
+    fun setSelectedWishId(id: String) {
+        _selectedWishId.value = id
+        loadSelectedWish()
+    }
+
+    private fun loadSelectedWish() {
+        val id = _selectedWishId.value ?: return
+
+        viewModelScope.launch {
+            repository.getLocalWishes(userId ?: "").collect { result ->
+                if (result is ResultState.Succes) {
+                    _selectedWish.value = result.data.find { it.id == id }
+                }
+            }
+        }
+    }
+
 
     fun updateTitle(value: String) {
         _addWishState.value = _addWishState.value.copy(title = value, error = null)

@@ -10,8 +10,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,9 +25,8 @@ import com.example.calmlist.model.ResultState
 import com.example.calmlist.model.Wish
 import com.example.calmlist.navigation.Routes
 import com.example.calmlist.presentation.ViewModel.AppViewModel
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
+
+
 import com.example.calmlist.presentation.ViewModel.SyncViewModel
 import com.example.calmlist.presentation.ViewModel.WishDetailViewModel
 
@@ -88,17 +85,20 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.spacedBy(14.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(homeState.wishes) { wish ->
+                    items(
+                        homeState.wishes.sortedByDescending { it.timestamp }
+                    ) { wish ->
                         WishCard(
                             wish = wish,
+                            wishDetailViewModel = wishViewModel,
+
                             onClick = {
-                                navController.navigate(
-                                    Routes.WishListScreen
-                                )
+                                navController.navigate(Routes.WishDetailScreen)
                             }
                         )
                     }
                 }
+
             }
         }
 
@@ -138,6 +138,7 @@ fun HomeScreen(
 @Composable
 fun WishCard(
     wish: Wish,
+    wishDetailViewModel: WishDetailViewModel,
     onClick: () -> Unit
 ) {
     Card(
@@ -146,37 +147,43 @@ fun WishCard(
             containerColor = colorResource(R.color.serene_primary)
         ),
         modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
+            .fillMaxWidth().height(150.dp)
+            .clickable {
+                wishDetailViewModel.setSelectedWishId(wish.id)
+
+                onClick(
+
+                ) }
     ) {
         Column(modifier = Modifier.padding(18.dp)) {
-            
-            if (!wish.imagePath.isNullOrBlank()) {
-                AsyncImage(
-                    model = wish.imagePath,
-                    contentDescription = "Wish Image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-            }
+//
+//            if (!wish.imagePath.isNullOrBlank()) {
+//                AsyncImage(
+//                    model = wish.imagePath,
+//                    contentDescription = "Wish Image",
+//                    contentScale = ContentScale.Crop,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(150.dp)
+//                        .clip(RoundedCornerShape(12.dp))
+//                )
+//                Spacer(modifier = Modifier.height(12.dp))
+//            }
 
             Text(
                 text = wish.title ?: "Untitled Wish",
-                fontSize = 16.sp,
+                fontSize = 26.sp,
                 fontWeight = FontWeight.Medium,
+
                 color = colorResource(R.color.serene_text_primary)
             )
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             if (!wish.note.isNullOrBlank()) {
                 Text(
                     text = wish.note,
-                    fontSize = 13.sp,
+                    fontSize = 23.sp,
                     color = colorResource(R.color.serene_text_secondary),
                     maxLines = 2
                 )
@@ -188,23 +195,8 @@ fun WishCard(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (!wish.imagePath.isNullOrBlank()) {
-                    Icon(
-                        imageVector = Icons.Filled.Person,
-                        contentDescription = "Has Photo",
-                        tint = colorResource(R.color.serene_text_secondary),
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
 
-                if (!wish.audioPath.isNullOrBlank()) {
-                    Icon(
-                        imageVector = Icons.Filled.Phone,
-                        contentDescription = "Has Audio",
-                        tint = colorResource(R.color.serene_text_secondary),
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
+
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -286,6 +278,9 @@ fun ErrorBanner(message: String) {
     }
 }
 fun formatTime(timestamp: Long): String {
-    val sdf = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault())
-    return sdf.format(java.util.Date(timestamp))
+    val time = java.text.SimpleDateFormat(
+        "dd MMM yyyy, hh:mm a",
+        java.util.Locale.getDefault()
+    )
+    return time.format(java.util.Date(timestamp))
 }
