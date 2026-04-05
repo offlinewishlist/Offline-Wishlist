@@ -123,4 +123,8 @@ class WishRepository(
             emit(ResultState.error(e.message ?: "Delete failed"))
         }
     }
+
+    suspend fun clearAllWishes() {
+        dao.deleteAll()
+    }
 }

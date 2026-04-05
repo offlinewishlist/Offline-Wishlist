@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.calmlist.AppContainer
 
+@Suppress("UNCHECKED_CAST")
 class AppViewModelFactory(
     private val container: AppContainer
 ) : ViewModelProvider.Factory {
@@ -13,7 +14,9 @@ class AppViewModelFactory(
         if (modelClass.isAssignableFrom(AppViewModel::class.java)) {
             return AppViewModel(
                 loginUseCase = container.logInUser,
-                createUserUseCase = container.createUserUseCase
+                createUserUseCase = container.createUserUseCase,
+                wishRepository = container.wishRepository,
+                context = container.context
             ) as T
         } else if (modelClass.isAssignableFrom(SyncViewModel::class.java)) {
             return SyncViewModel(

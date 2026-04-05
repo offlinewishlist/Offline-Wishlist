@@ -9,7 +9,18 @@ import com.example.calmlist.model.ResultState
 import com.example.calmlist.model.UserData
 import kotlinx.coroutines.launch
 
-class AppViewModel(val loginUseCase: LoginUserUseCase, val createUserUseCase: CreateUserUseCase): ViewModel() {
+import android.content.Context
+import android.content.SharedPreferences
+import com.example.calmlist.data.Repo.WishRepository
+import com.example.calmlist.domain.supabase.SupabaseClient
+import io.github.jan.supabase.gotrue.auth
+
+class AppViewModel(
+    val loginUseCase: LoginUserUseCase,
+    val createUserUseCase: CreateUserUseCase,
+    private val wishRepository: WishRepository,
+    private val context: Context
+): ViewModel() {
     private val _logInScreenstate = mutableStateOf(LogINScreenSate())
     val logINScreenstate = _logInScreenstate
 
@@ -17,12 +28,85 @@ class AppViewModel(val loginUseCase: LoginUserUseCase, val createUserUseCase: Cr
     val signupScreenstate = _signupScreenstate
 
     val userId = mutableStateOf<String?>(null)
+    
+    // Settings State
+    private val prefs: SharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+    
+    val deleteConfirmation = mutableStateOf(prefs.getBoolean("delete_conf", true))
+    val storageUsage = mutableStateOf("Calculating...")
+
+    init {
+        calculateStorageUsage()
+    }
 
     fun storeUserId(id: String) {
         userId.value = id
     }
+    
+    fun toggleDeleteConfirmation(enabled: Boolean) {
+        deleteConfirmation.value = enabled
+        prefs.edit().putBoolean("delete_conf", enabled).apply()
+    }
+    
+    fun calculateStorageUsage() {
+        viewModelScope.launch {
+             try {
+                val filesDirSize = getFolderSize(context.filesDir)
 
+                val dbSize = context.getDatabasePath("wish_database").length()
+                
+                val totalBytes = filesDirSize + dbSize
+                storageUsage.value = formatSize(totalBytes)
+            } catch (e: Exception) {
+                storageUsage.value = "Unknown"
+            }
+        }
+    }
+    
+    private fun getFolderSize(file: java.io.File): Long {
+        if (!file.exists()) return 0
+        if (!file.isDirectory) return file.length()
+        var length: Long = 0
+        val files = file.listFiles() ?: return 0
+        for (f in files) {
+            length += getFolderSize(f)
+        }
+        return length
+    }
+    
+    private fun formatSize(bytes: Long): String {
+        val kb = bytes / 1024.0
+        val mb = kb / 1024.0
+        return when {
+            mb >= 1 -> String.format("%.2f MB", mb)
+            kb >= 1 -> String.format("%.2f KB", kb)
+            else -> "$bytes Bytes"
+        }
+    }
 
+    fun logout() {
+        // Reset state immediately to prevent race condition with navigation
+        userId.value = null
+        _logInScreenstate.value = LogINScreenSate()
+        
+        viewModelScope.launch {
+            try {
+                SupabaseClient.client.auth.signOut()
+                // Clear local data optional on logout? Request said "clears local cache".
+                // I will clear local DB to ensure privacy.
+                wishRepository.clearAllWishes()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    
+    fun clearLocalData() {
+        viewModelScope.launch {
+            wishRepository.clearAllWishes()
+            calculateStorageUsage()
+        }
+    }
 
     fun checkSession() {
         viewModelScope.launch {

@@ -33,6 +33,13 @@ var userId: String?=null
     private fun loadSelectedWish() {
         val id = _selectedWishId.value ?: return
 
+
+        val cachedWish = _HomeScreenstate.value.wishes.find { it.id == id }
+        if (cachedWish != null) {
+            _selectedWish.value = cachedWish
+            return
+        }
+
         viewModelScope.launch {
             repository.getLocalWishes(userId ?: "").collect { result ->
                 if (result is ResultState.Succes) {
@@ -92,15 +99,17 @@ var userId: String?=null
         viewModelScope.launch {
             repository.editWish(wish).collect { result ->
                 when (result) {
-                    ResultState.Loading -> HomeScreenSate(isLoading = true)
+                    ResultState.Loading -> {
+                        // Optional: Show loading indicator
+                    }
                     is ResultState.Succes -> {
-                        _HomeScreenstate.value = HomeScreenSate(
-                            success = true,
-                        )
+                        // Do NOT overwrite the list with emptyList()
+                        // The Room Flow will automatically emit the new list
                     }
 
                     is ResultState.error -> {
-                        _HomeScreenstate.value = HomeScreenSate(error = result.message)
+                        // Only show error if needed
+                         _addWishState.value = _addWishState.value.copy(error = result.message)
                     }
                 }
             }
@@ -112,16 +121,13 @@ var userId: String?=null
         viewModelScope.launch {
             repository.deleteWish(wishId).collect { result ->
                 when (result) {
-                    ResultState.Loading -> HomeScreenSate(isLoading = true)
+                    ResultState.Loading -> { } // Optional loading
                     is ResultState.Succes -> {
-                        _HomeScreenstate.value = HomeScreenSate(
-                            success = true,
-                        )
-
+                       // Room Flow will handle the list update
                     }
 
                     is ResultState.error -> {
-                        _HomeScreenstate.value = HomeScreenSate(error = result.message)
+                         // Handle error
                     }
                 }
             }
@@ -132,22 +138,18 @@ var userId: String?=null
         viewModelScope.launch {
             repository.saveWishOffline(wish).collect { result ->
                 when (result) {
-                    ResultState.Loading -> HomeScreenSate(isLoading = true)
+                    ResultState.Loading -> {
+                        _addWishState.value = _addWishState.value.copy(isSaving = true)
+                    }
                     is ResultState.Succes -> {
-                        _HomeScreenstate.value = HomeScreenSate(
-                            success = true,
-                        )
-
+                        _addWishState.value = AddWishState(success = true) // Reset add wish state and set success
                     }
 
                     is ResultState.error -> {
-                        _HomeScreenstate.value = HomeScreenSate(error = result.message)
+                         _addWishState.value = _addWishState.value.copy(error = result.message, isSaving = false)
                     }
-
                 }
-
             }
-
         }
     }
 
@@ -173,6 +175,7 @@ var userId: String?=null
         }
     }
     fun getAllWishes(userId: String) {
+        this.userId = userId
         viewModelScope.launch {
             repository.getLocalWishes(userId).collect { result ->
                 when (result) {
@@ -197,6 +200,13 @@ var userId: String?=null
         }
     }
 
+    fun resetAddWishState() {
+        _addWishState.value = AddWishState()
+    }
+
+    fun resetHomeScreenState() {
+        _HomeScreenstate.value = HomeScreenSate()
+    }
 }
 
 data class HomeScreenSate(
@@ -212,5 +222,6 @@ data class AddWishState(
     val imagePath: String? = null,
     val audioPath: String? = null,
     val isSaving: Boolean = false,
+    val success: Boolean = false,
     val error: String? = null
 )

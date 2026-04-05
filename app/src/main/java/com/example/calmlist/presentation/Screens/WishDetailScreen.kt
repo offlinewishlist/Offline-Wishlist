@@ -18,7 +18,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,7 +41,17 @@ import com.example.calmlist.util.playAudio
 
 @Composable
 fun WishDetailScreen(navController: NavHostController, wishViewModel: WishDetailViewModel) {
+    val homeState by wishViewModel.HomeScreensate
     val wish by wishViewModel.selectedWish
+
+    // Handle Navigation on Success
+    LaunchedEffect(homeState.success) {
+        if (homeState.success == true) {
+            navController.popBackStack()
+            wishViewModel.resetHomeScreenState()
+        }
+    }
+
     if (wish == null) {
         Box(
             modifier = Modifier
@@ -67,6 +79,17 @@ fun WishDetailScreen(navController: NavHostController, wishViewModel: WishDetail
                 color = colorResource(R.color.serene_text_primary)
             )
             Spacer(modifier = Modifier.height(20.dp))
+            
+            // Show Error if any
+            if (homeState.error != null) {
+                Text(
+                    text = homeState.error ?: "Unknown Error",
+                    color = colorResource(R.color.serene_error),
+                    fontSize = 14.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
             // IMAGE
             if (!wish!!.imagePath.isNullOrBlank()) {
                 AsyncImage(
@@ -99,7 +122,7 @@ fun WishDetailScreen(navController: NavHostController, wishViewModel: WishDetail
                 maxLines = 4
             )
             Spacer(modifier = Modifier.height(16.dp))
-            // AUDIO
+
             if (!wish!!.audioPath.isNullOrBlank()) {
                 Card(
                     modifier = Modifier
@@ -129,7 +152,6 @@ fun WishDetailScreen(navController: NavHostController, wishViewModel: WishDetail
                         timestamp = System.currentTimeMillis()
                     )
                     wishViewModel.editWish(updatedWish)
-                    navController.popBackStack()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -137,16 +159,20 @@ fun WishDetailScreen(navController: NavHostController, wishViewModel: WishDetail
                 shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.serene_primary)
-                )
+                ),
+                enabled = !homeState.isLoading
             ) {
-                Text("Save Changes", color = colorResource(R.color.white))
+                if (homeState.isLoading) {
+                    CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier.size(24.dp))
+                } else {
+                    Text("Save Changes", color = colorResource(R.color.white))
+                }
             }
             Spacer(modifier = Modifier.height(12.dp))
-            // DELETE BUTTON
+
             Button(
                 onClick = {
                     wishViewModel.deleteWish(wish!!.id)
-                    navController.popBackStack()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -154,9 +180,14 @@ fun WishDetailScreen(navController: NavHostController, wishViewModel: WishDetail
                 shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.serene_error)
-                )
+                ),
+                enabled = !homeState.isLoading
             ) {
-                Text("Delete Wish", color = colorResource(R.color.white))
+                 if (homeState.isLoading) {
+                    CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier.size(24.dp))
+                } else {
+                    Text("Delete Wish", color = colorResource(R.color.white))
+                }
             }
         }
     }

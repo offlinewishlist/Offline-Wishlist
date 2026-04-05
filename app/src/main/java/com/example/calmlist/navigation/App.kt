@@ -32,7 +32,7 @@ fun App(navController: NavHostController, viewModel: AppViewModel, paddingValues
                 HomeScreen(navController,syncViewModel,wishDetailViewModel,viewModel)
             }
             composable<Routes.SettingsScreen> {
-                SettingsScreen(navController)
+                SettingsScreen(navController, viewModel, wishDetailViewModel)
 
             }
             composable<Routes.LogINScreen> {

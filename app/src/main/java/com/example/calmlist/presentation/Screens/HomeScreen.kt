@@ -4,12 +4,15 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -61,13 +64,21 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(20.dp)
-        ) {
+        ) { Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+
             Text(
                 text = "Home",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Medium,
                 color = colorResource(R.color.serene_text_primary)
             )
+            IconButton(onClick = {
+                navController.navigate(Routes.SettingsScreen)
+            }) {
+                Icon(imageVector = Icons.Filled.Settings,contentDescription = null)
+            }
+
+        }
 
             Spacer(modifier = Modifier.height(20.dp))
 

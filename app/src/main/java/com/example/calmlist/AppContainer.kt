@@ -7,10 +7,10 @@ import com.example.calmlist.domain.supabase.SupabaseClient
 import com.example.calmlist.domain.supabase.repo.AuthRepository
 
 
-class AppContainer(context: android.content.Context) {
+class AppContainer(val context: android.content.Context) {
 
     init {
-        com.example.calmlist.domain.supabase.SupabaseClient.initialize(context)
+       SupabaseClient.initialize(context)
     }
 
     private val authRepository = AuthRepository()

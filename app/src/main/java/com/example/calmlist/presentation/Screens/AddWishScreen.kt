@@ -34,6 +34,9 @@ import com.example.calmlist.presentation.ViewModel.AppViewModel
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.example.calmlist.util.AudioRecorder
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.size
 import java.io.File
 import com.example.calmlist.presentation.ViewModel.WishDetailViewModel
 
@@ -44,6 +47,15 @@ fun AddWishScreen(
     wishViewModel: WishDetailViewModel
 ) {
     val state = wishViewModel.addWishState.value
+
+
+    LaunchedEffect(state.success) {
+        if (state.success) {
+            wishViewModel.resetAddWishState()
+            navController.popBackStack()
+        }
+    }
+
     val userId = appViewModel.userId.value ?: ""
 
     val context = LocalContext.current
@@ -140,12 +152,11 @@ fun AddWishScreen(
                 )
             }
 
-            Spacer(Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
             Button(
                 onClick = {
-                    wishViewModel.submitWish(userId)
-                    navController.popBackStack()
+                    wishViewModel.submitWish(appViewModel.userId.value ?: "")
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -153,9 +164,15 @@ fun AddWishScreen(
                 shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.serene_primary)
-                )
+                ),
+                enabled = !state.isSaving
             ) {
-                Text("Save Wish", color = colorResource(R.color.white))
+                 if (state.isSaving) {
+
+                    CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier.size(24.dp))
+                } else {
+                    Text(text = "Save Hope", color = colorResource(R.color.white), fontSize = 18.sp)
+                }
             }
         }
     }

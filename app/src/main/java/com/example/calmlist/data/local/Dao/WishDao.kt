@@ -12,6 +12,7 @@ interface WishDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(wishes: List<WishEntity>)
 
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWish(wish: WishEntity)
     @Query("DELETE FROM wishes WHERE id = :wishId")
@@ -28,4 +29,7 @@ interface WishDao {
 
     @Query("DELETE FROM wishes WHERE userId = :userId")
     suspend fun clearUserWishes(userId: String)
+
+    @Query("DELETE FROM wishes")
+    suspend fun deleteAll()
 }
