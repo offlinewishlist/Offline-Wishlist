@@ -1,5 +1,6 @@
 package com.example.calmlist.presentation.Screens
-
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -19,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -101,6 +104,25 @@ fun WishDetailScreen(navController: NavHostController, wishViewModel: WishDetail
                         .height(200.dp)
                         .clip(RoundedCornerShape(16.dp))
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+            } else {
+                 Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(colorResource(R.color.serene_primary).copy(alpha = 0.1f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                     Image(
+                         painter = painterResource(id = R.mipmap.image_placeholder),
+                         contentDescription = null,
+                         modifier = Modifier
+                             .fillMaxWidth()
+                             .height(200.dp),
+                         contentScale = ContentScale.Crop
+                     )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
             }
             // TITLE

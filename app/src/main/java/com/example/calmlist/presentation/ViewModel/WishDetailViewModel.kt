@@ -185,7 +185,7 @@ var userId: String?=null
 
                     is ResultState.Succes -> {
                         _HomeScreenstate.value = HomeScreenSate(
-                            success = true,
+                            success = false,
                             wishes = result.data
                         )
                     }

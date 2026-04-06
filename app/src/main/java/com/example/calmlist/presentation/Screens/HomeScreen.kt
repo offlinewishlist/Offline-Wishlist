@@ -64,7 +64,7 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(20.dp)
-        ) { Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+        ) { Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
 
             Text(
                 text = "Home",
@@ -103,9 +103,8 @@ fun HomeScreen(
                             wish = wish,
                             wishDetailViewModel = wishViewModel,
 
-                            onClick = {
-                                navController.navigate(Routes.WishDetailScreen)
-                            }
+                            navController
+
                         )
                     }
                 }
@@ -150,7 +149,8 @@ fun HomeScreen(
 fun WishCard(
     wish: Wish,
     wishDetailViewModel: WishDetailViewModel,
-    onClick: () -> Unit
+    navController: NavController
+
 ) {
     Card(
         shape = RoundedCornerShape(18.dp),
@@ -161,10 +161,9 @@ fun WishCard(
             .fillMaxWidth().height(150.dp)
             .clickable {
                 wishDetailViewModel.setSelectedWishId(wish.id)
+                navController.navigate(Routes.WishDetailScreen)
 
-                onClick(
-
-                ) }
+                }
     ) {
         Column(modifier = Modifier.padding(18.dp)) {
 //

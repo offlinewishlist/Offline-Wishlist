@@ -39,6 +39,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.foundation.layout.size
 import java.io.File
 import com.example.calmlist.presentation.ViewModel.WishDetailViewModel
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun AddWishScreen(
@@ -61,11 +64,17 @@ fun AddWishScreen(
     val context = LocalContext.current
 
 
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
     val imagePicker = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let {
-            wishViewModel.updateImage(it.toString())
+            scope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                val internalPath = com.example.calmlist.util.ImageUtils.copyImageToInternalStorage(context, it)
+                if (internalPath != null) {
+                    wishViewModel.updateImage(internalPath)
+                }
+            }
         }
     }
 
