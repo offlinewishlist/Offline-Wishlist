@@ -39,7 +39,15 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.foundation.layout.size
 import java.io.File
 import com.example.calmlist.presentation.ViewModel.WishDetailViewModel
+import androidx.core.content.FileProvider
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 
@@ -76,6 +84,71 @@ fun AddWishScreen(
                 }
             }
         }
+    }
+
+    var showDialog by remember { mutableStateOf(false) }
+    var tempUri by remember { mutableStateOf<android.net.Uri?>(null) }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success && tempUri != null) {
+            wishViewModel.updateImage(tempUri!!.toString())
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+             val file = File(context.filesDir, "wish_images/img_${System.currentTimeMillis()}.jpg")
+             file.parentFile?.mkdirs()
+             val uri = FileProvider.getUriForFile(
+                context,
+                context.packageName + ".fileprovider",
+                file
+            )
+            tempUri = uri
+            cameraLauncher.launch(uri)
+        } else {
+            Toast.makeText(context, "Permission Required", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Choose Image Source") },
+            text = { Text("Select where to capture the image from.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDialog = false
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                         val file = File(context.filesDir, "wish_images/img_${System.currentTimeMillis()}.jpg")
+                         file.parentFile?.mkdirs()
+                         val uri = FileProvider.getUriForFile(
+                            context,
+                            context.packageName + ".fileprovider",
+                            file
+                        )
+                        tempUri = uri
+                        cameraLauncher.launch(uri)
+                    } else {
+                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                }) {
+                    Text("Camera")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDialog = false
+                    imagePicker.launch("image/*")
+                }) {
+                    Text("Gallery")
+                }
+            }
+        )
     }
 
     Box(
@@ -118,7 +191,7 @@ fun AddWishScreen(
 
             Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 MediaButton(text = "Add Photo") {
-                    imagePicker.launch("image/*")
+                    showDialog = true
                 }
 
                 val recorder = remember { AudioRecorder(context) }
