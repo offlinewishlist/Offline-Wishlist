@@ -26,7 +26,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 @Composable
 fun SettingsScreen(navController: NavHostController, viewModel: AppViewModel, wishDetailViewModel: WishDetailViewModel) {
     val storageUsage by viewModel.storageUsage
-    val deleteConfirmation by viewModel.deleteConfirmation
 
     LaunchedEffect(Unit) {
         viewModel.calculateStorageUsage()
@@ -76,26 +75,7 @@ fun SettingsScreen(navController: NavHostController, viewModel: AppViewModel, wi
                 }
             }
 
-            SettingsCard(title = "Preferences") {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("Delete Confirmation", fontWeight = FontWeight.Medium, color = colorResource(R.color.serene_text_primary))
-                        Text("Ask before deleting wishes", fontSize = 12.sp, color = colorResource(R.color.serene_text_secondary))
-                    }
-                    Switch(
-                        checked = deleteConfirmation,
-                        onCheckedChange = { viewModel.toggleDeleteConfirmation(it) },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = colorResource(R.color.serene_primary),
-                            checkedTrackColor = colorResource(R.color.serene_primary).copy(alpha = 0.2f)
-                        )
-                    )
-                }
-            }
+
 
             Spacer(modifier = Modifier.weight(1f))
 

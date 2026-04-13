@@ -32,7 +32,6 @@ class AppViewModel(
     // Settings State
     private val prefs: SharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
     
-    val deleteConfirmation = mutableStateOf(prefs.getBoolean("delete_conf", true))
     val storageUsage = mutableStateOf("Calculating...")
 
     init {
@@ -43,10 +42,7 @@ class AppViewModel(
         userId.value = id
     }
     
-    fun toggleDeleteConfirmation(enabled: Boolean) {
-        deleteConfirmation.value = enabled
-        prefs.edit().putBoolean("delete_conf", enabled).apply()
-    }
+
     
     fun calculateStorageUsage() {
         viewModelScope.launch {

@@ -100,16 +100,14 @@ var userId: String?=null
             repository.editWish(wish).collect { result ->
                 when (result) {
                     ResultState.Loading -> {
-                        // Optional: Show loading indicator
+                        _HomeScreenstate.value = HomeScreenSate(isLoading = true)
                     }
                     is ResultState.Succes -> {
-                        // Do NOT overwrite the list with emptyList()
-                        // The Room Flow will automatically emit the new list
+                        _HomeScreenstate.value = HomeScreenSate(success = true)
                     }
 
                     is ResultState.error -> {
-                        // Only show error if needed
-                         _addWishState.value = _addWishState.value.copy(error = result.message)
+                         _HomeScreenstate.value = HomeScreenSate(error = result.message)
                     }
                 }
             }
@@ -124,6 +122,7 @@ var userId: String?=null
                     ResultState.Loading -> { } // Optional loading
                     is ResultState.Succes -> {
                        // Room Flow will handle the list update
+                       _HomeScreenstate.value = HomeScreenSate(success = true)
                     }
 
                     is ResultState.error -> {
@@ -153,27 +152,7 @@ var userId: String?=null
         }
     }
 
-    fun editWsh(wish: Wish) {
-        viewModelScope.launch {
-            repository.editWish(wish).collect { result ->
-                when (result) {
-                    ResultState.Loading -> HomeScreenSate(isLoading = true)
-                    is ResultState.Succes -> {
-                        _HomeScreenstate.value = HomeScreenSate(
-                            success = true,
-                        )
-                    }
 
-                    is ResultState.error -> {
-                        _HomeScreenstate.value = HomeScreenSate(error = result.message)
-
-
-                    }
-
-                }
-            }
-        }
-    }
     fun getAllWishes(userId: String) {
         this.userId = userId
         viewModelScope.launch {
