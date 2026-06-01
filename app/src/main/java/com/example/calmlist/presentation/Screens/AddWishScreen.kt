@@ -261,7 +261,7 @@ fun AddWishScreen(
 }
 @Composable
 
-fun MediaButton( //Media//
+fun MediaButton(
     text: String,
     isRecording: Boolean = false,
     onClick: () -> Unit
