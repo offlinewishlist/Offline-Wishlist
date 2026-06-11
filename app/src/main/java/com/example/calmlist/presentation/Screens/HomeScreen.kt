@@ -84,6 +84,14 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            Text(
+                text = "${homeState.wishes.size} ${if (homeState.wishes.size == 1) "wish" else "wishes"} saved",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+            )
 
             if (homeState.wishes.isEmpty() &&
                 syncState !is ResultState.Loading &&
