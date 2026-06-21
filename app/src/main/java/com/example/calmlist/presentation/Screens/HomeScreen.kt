@@ -93,9 +93,17 @@ fun HomeScreen(
                     .padding(horizontal = 16.dp, vertical = 6.dp)
             )
 
-            if (homeState.wishes.isEmpty() &&
-                syncState !is ResultState.Loading &&
-                !homeState.isLoading
+            if (homeState.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            } else if (homeState.wishes.isEmpty() &&
+                syncState !is ResultState.Loading
             ) {
                 Log.d("wishes", "HomeScreen: ${wishViewModel.HomeScreensate.value}")
                 EmptyState()
@@ -145,9 +153,6 @@ fun HomeScreen(
             LoadingOverlay("Syncing your wishes...")
         }
 
-        if (homeState.isLoading) {
-            LoadingOverlay("Loading wishes...")
-        }
 
 
         if (!homeState.error.isNullOrEmpty()) {
