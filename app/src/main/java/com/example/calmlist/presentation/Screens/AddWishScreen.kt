@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -22,6 +23,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -36,6 +38,7 @@ import androidx.compose.runtime.remember
 import com.example.calmlist.util.AudioRecorder
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.size
 import java.io.File
 import com.example.calmlist.presentation.ViewModel.WishDetailViewModel
@@ -178,13 +181,31 @@ fun AddWishScreen(
 
             Spacer(Modifier.height(12.dp))
 
+            val maxChars = 300
+
             OutlinedTextField(
                 value = state.note,
-                onValueChange = { wishViewModel.updateNote(it) },
+                onValueChange = { 
+                    if (it.length <= maxChars) wishViewModel.updateNote(it)
+                },
                 placeholder = { Text("Why do you want this? (optional)") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 120.dp),
                 shape = RoundedCornerShape(14.dp),
-                maxLines = 4
+                maxLines = 8
+            )
+
+            Text(
+                text = "${state.note.length} / $maxChars",
+                style = MaterialTheme.typography.bodySmall,
+                color = if (state.note.length >= maxChars)
+                            MaterialTheme.colorScheme.error
+                        else
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(end = 4.dp, top = 2.dp)
             )
 
             Spacer(Modifier.height(20.dp))
