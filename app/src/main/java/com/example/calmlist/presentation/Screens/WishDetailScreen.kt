@@ -22,6 +22,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -83,6 +87,8 @@ fun WishDetailScreen(navController: NavHostController, wishViewModel: WishDetail
     var note by remember { mutableStateOf(wish!!.note ?: "") }
     var imagePath by remember { mutableStateOf(wish!!.imagePath) }
     var audioPath by remember { mutableStateOf(wish!!.audioPath) }
+    
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     // Helpers for Images & Permissions
     val context = LocalContext.current
@@ -168,6 +174,29 @@ fun WishDetailScreen(navController: NavHostController, wishViewModel: WishDetail
                     imagePicker.launch("image/*")
                 }) {
                     Text("Gallery")
+                }
+            }
+        )
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Delete Wish") },
+            text = { Text("This wish will be permanently removed. Are you sure?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        wishViewModel.deleteWish(wish!!.id)
+                    }
+                ) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancel")
                 }
             }
         )
@@ -336,24 +365,15 @@ fun WishDetailScreen(navController: NavHostController, wishViewModel: WishDetail
             }
             Spacer(modifier = Modifier.height(12.dp))
 
-            Button(
-                onClick = {
-                    wishViewModel.deleteWish(wish!!.id)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(18.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.serene_error)
-                ),
-                enabled = !homeState.isLoading
+            IconButton(
+                onClick = { showDeleteDialog = true },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                 if (homeState.isLoading) {
-                    CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier.size(24.dp))
-                } else {
-                    Text("Delete Wish", color = colorResource(R.color.white))
-                }
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete wish",
+                    tint = MaterialTheme.colorScheme.error
+                )
             }
         }
     }
