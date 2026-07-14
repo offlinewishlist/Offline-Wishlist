@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -94,6 +95,18 @@ fun SettingsScreen(navController: NavHostController, viewModel: AppViewModel, wi
             ) {
                 Text("Log Out", color = Color.White)
             }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Text(
+                text = "Offline WishList v1.0",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
